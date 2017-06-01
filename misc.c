@@ -198,6 +198,7 @@ static void update_log_dir(long long *array, const int cnt)
 	for (i = SYS_LOG_MAX - 1; i < cnt; i++) {
 		sprintf(buf, "%lld", array[i]);
                 string_add_character(buf);
+        printf("delete dir when dirs out of SYS_LOG_MAX\n");
 		delete_dir(buf);
 	}
 }

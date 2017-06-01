@@ -16,7 +16,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define SYSTEM_PATH	"/data/syslog"
+#define SYSTEM_PATH	"/data/logs"
 
 /* Mime subject */
 #define FROM	"from@rock-chips.cn"
@@ -47,7 +47,7 @@
 /* Function config */
 #define	CONFIG_KERNEL_LOG
 #define CONFIG_LOGCAT_LOG
-#define CONFIG_PROCESS_LOG
+//#define CONFIG_PROCESS_LOG
 //#define CONFIG_SEND_MAIL
 
 /* config all files numbers in SYSTEM_PATH
