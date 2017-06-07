@@ -313,6 +313,7 @@ static void create_new_log(void)
  */
 static void create_system_directory(void)
 {
+  umask(0);
 	mkdir(SYSTEM_PATH, DIR_PERMIT);
 }
 
