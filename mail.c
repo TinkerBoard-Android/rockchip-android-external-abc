@@ -16,6 +16,7 @@
 #include "includes.h"
 #include "config.h"
 #include "misc.h"
+#include <strings.h>
 
 #define MIME	"Mime-Version: 1.0"
 #define CONTENT_CODE	"Content-Transfer-Encoding: base64\r\n"
