@@ -17,14 +17,14 @@
 #include "config.h"
 #include "misc.h"
 #include "mail.h"
+#include "hotplug.h"
 
 #define KMSG_PATH	"/proc/kmsg"
+
 
 int process_fd;
 int android_fd;
 int kernel_fd;
-
-#define printf ALOGD
 
 /*
  * upload log contain keywords
@@ -208,11 +208,28 @@ static void *abc_kernel(void *arg)
 	return NULL;
 }
 
+static void *abc_monitor_uevent(void *arg)
+{
+	printf("abc abc_monitor_uevent\n");
+    MonitorNetlinkUevent();
+	return 0;
+}
+
+static void *abc_copy_log_to_flash(void *arg)
+{
+        sleep(8);
+	char path_flash[60] = LOG_FLASH_PATH;
+	printf("abc abc_copy_log_to_flash\n");
+         copy_all_logs_to_storage(path_flash);
+	return 0;
+}
+
 int main(int argc, char *argv[])
 {
 	printf("abc main\n");
 	pthread_t abc_kernel_id, abc_process_id, 
-		  abc_android_id, abc_upload_id;
+		  abc_android_id, abc_upload_id, 
+		  abc_monitor_uevent_id,abc_copy_log_to_flash_id;
 	init_all();
 
 #ifdef CONFIG_KERNEL_LOG
@@ -231,6 +248,13 @@ int main(int argc, char *argv[])
 	pthread_create(&abc_upload_id, NULL, abc_upload, NULL);
 #endif
 
+#ifdef CONFIG_MONITOR_UEVENT
+	pthread_create(&abc_monitor_uevent_id, NULL, abc_monitor_uevent, NULL);
+#endif
+
+#ifdef CONFIG_COPY_LOG_TO_FLASH
+	pthread_create(&abc_copy_log_to_flash_id, NULL, abc_copy_log_to_flash, NULL);
+#endif
 
 #ifdef CONFIG_KERNEL_LOG
 	pthread_join(abc_kernel_id, NULL);
@@ -247,5 +271,15 @@ int main(int argc, char *argv[])
 #ifdef CONFIG_SEND_MAIL
 	pthread_join(abc_upload_id ,NULL);
 #endif
-	return 0;
+
+
+#ifdef CONFIG_MONITOR_UEVENT
+    pthread_join(abc_monitor_uevent_id ,NULL);
+#endif
+
+#ifdef CONFIG_COPY_LOG_TO_FLASH
+    pthread_join(abc_copy_log_to_flash_id ,NULL);
+#endif
+
+    return 0;
 }

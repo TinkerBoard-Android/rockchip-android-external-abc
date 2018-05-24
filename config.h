@@ -18,6 +18,9 @@
 
 #define SYSTEM_PATH	"/data/logs"
 
+#define LOG_SD_PATH	"/storage/"
+#define LOG_FLASH_PATH	"/data/media/0";
+
 /* Mime subject */
 #define FROM	"from@rock-chips.cn"
 #define TO	"to@example.com"
@@ -49,6 +52,8 @@
 #define CONFIG_LOGCAT_LOG
 //#define CONFIG_PROCESS_LOG
 //#define CONFIG_SEND_MAIL
+#define CONFIG_COPY_LOG_TO_FLASH
+#define CONFIG_MONITOR_UEVENT
 
 /* config all files numbers in SYSTEM_PATH
  * usually keep default configure---100
@@ -59,5 +64,6 @@
 #define SYS_LOG_MAX	10
 
 #include <cutils/log.h>
-
+#define printf ALOGD
+#define LOG_TAG "abc"
 #endif

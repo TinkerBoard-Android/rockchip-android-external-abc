@@ -17,6 +17,9 @@
 
 extern char latest_file[PATH_MAX];
 
+extern void create_log_directory(const char* sd_path);
+extern void copy_all_logs_to_storage(const char* path);
+
 extern void init_all(void);
 extern void delete_dir(const char *);
 int base64_encode(const char *, char *, const unsigned long);

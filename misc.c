@@ -16,6 +16,7 @@
 #include "config.h"
 #include "abc.h"
 
+#define printf ALOGD
 #define FILE_PERMIT	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define DIR_PERMIT	(S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP \
 				 | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH)
@@ -315,6 +316,64 @@ static void create_system_directory(void)
 {
   umask(0);
 	mkdir(SYSTEM_PATH, DIR_PERMIT);
+}
+
+/*
+ *create directory to store some logs to sdcard
+ */
+void create_log_directory(const char* sd_path)
+{
+	mkdir(sd_path, DIR_PERMIT);
+}
+
+void copy_all_logs_to_storage(const char* path){
+	char shell_cmd[60] = "";
+	printf("copy_all_logs_to_storage to %s \n",path);
+	if (access(path,0) ){
+		printf("error: %s not found,return\n,path");
+		return;
+	}else{
+	strcat(path,"/rk_logs/");//for 3399 7.1 the sdcard mountpoint is similar to "/storage/8527-18E3/rk_logs" , 8527-18E3 is the uuid
+	if ( !access(path,0) ){
+		printf(" %s EXISITS,rebuild it\n",path);
+		delete_dir(path);
+	}
+
+	create_log_directory(path);
+	
+	strcpy(shell_cmd,"cp -r /data/logs ");
+	strcat(shell_cmd,path);
+	printf("shell_cmd now %s\n", shell_cmd);
+	system(shell_cmd); 
+
+	strcpy(shell_cmd,"cp -r /sys/fs/pstore ");
+	strcat(shell_cmd,path);
+	printf("shell_cmd now %s\n", shell_cmd);
+	system(shell_cmd); 
+
+	strcpy(shell_cmd,"cp -r /data/anr ");
+	strcat(shell_cmd,path);
+	printf("shell_cmd now %s\n", shell_cmd);
+	system(shell_cmd); 
+
+	strcpy(shell_cmd,"cp -r /data/tombstones ");
+	strcat(shell_cmd,path);
+	printf("shell_cmd now %s\n", shell_cmd);
+	system(shell_cmd); 
+
+	strcpy(shell_cmd,"bugreport > ");
+	strcat(shell_cmd,path);
+	strcat(shell_cmd,"bugreport.log");
+	printf("shell_cmd now is %s\n", shell_cmd);
+	system(shell_cmd); 
+
+	strcpy(shell_cmd,"touch ");
+	strcat(shell_cmd,path);
+	strcat(shell_cmd,"COPY-COMPLETE");
+	system(shell_cmd);
+	printf("COPY-COMPLETE\n");
+	
+		}
 }
 
 /*
