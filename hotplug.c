@@ -12,31 +12,34 @@
 
 
 #define UEVENT_MSG_LEN 4096
-struct luther_gliethttp {
-	const char *action;
-	const char *path;
-	const char *subsystem;
-	const char *firmware;
-	int major;
-	int minor;
-	const char *devname;
-	const char *devtype;
+struct uevent
+{
+    const char *action;
+    const char *path;
+    const char *subsystem;
+    const char *firmware;
+    int major;
+    int minor;
+    const char *devname;
+    const char *devtype;
 };
-static int open_luther_gliethttp_socket(void);
-static void parse_event(const char *msg, struct luther_gliethttp *luther_gliethttp);
 
+static void parse_event(const char *msg, struct uevent *uevent);
+static int open_uevent_socket(void);
 int MonitorNetlinkUevent()
 {
     int device_fd = -1;
     char msg[UEVENT_MSG_LEN+2];
     int n;
 
-    device_fd = open_luther_gliethttp_socket();
+    device_fd = open_uevent_socket();
     printf("device_fd = %d\n", device_fd);
 
-    do {
-        while((n = recv(device_fd, msg, UEVENT_MSG_LEN, 0)) > 0) {
-            struct luther_gliethttp luther_gliethttp;
+    do
+    {
+        while((n = recv(device_fd, msg, UEVENT_MSG_LEN, 0)) > 0)
+        {
+            struct uevent uevent;
 
             if(n == UEVENT_MSG_LEN)
                 continue;
@@ -44,12 +47,13 @@ int MonitorNetlinkUevent()
             msg[n] = '\0';
             msg[n+1] = '\0';
 
-            parse_event(msg, &luther_gliethttp);
+            parse_event(msg, &uevent);
         }
-    } while(1);
+    }
+    while(1);
 }
 
-static int open_luther_gliethttp_socket(void)
+static int open_uevent_socket(void)
 {
     struct sockaddr_nl addr;
     int sz = 64*1024;
@@ -66,7 +70,8 @@ static int open_luther_gliethttp_socket(void)
 
     setsockopt(s, SOL_SOCKET, SO_RCVBUFFORCE, &sz, sizeof(sz));
 
-    if (bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+    if (bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0)
+    {
         close(s);
         return -1;
     }
@@ -74,67 +79,84 @@ static int open_luther_gliethttp_socket(void)
     return s;
 }
 
-static void parse_event(const char *msg, struct luther_gliethttp *luther_gliethttp)
+static void parse_event(const char *msg, struct uevent *uevent)
 {
-    luther_gliethttp->action = "";
-    luther_gliethttp->path = "";
-    luther_gliethttp->subsystem = "";
-    luther_gliethttp->firmware = "";
-    luther_gliethttp->major = -1;
-    luther_gliethttp->minor = -1;
-    luther_gliethttp->devname = "";
-    luther_gliethttp->devtype = "";
+    uevent->action = "";
+    uevent->path = "";
+    uevent->subsystem = "";
+    uevent->firmware = "";
+    uevent->major = -1;
+    uevent->minor = -1;
+    uevent->devname = "";
+    uevent->devtype = "";
     const char *puuid;
     char path_sd[60] = LOG_SD_PATH;
     printf("========================================================\n");
-    while (*msg) {
+    while (*msg)
+    {
 
         printf("%s\n", msg);
 
-        if (!strncmp(msg, "ACTION=", 7)) {
+        if (!strncmp(msg, "ACTION=", 7))
+        {
             msg += 7;
-            luther_gliethttp->action = msg;
-        } else if (!strncmp(msg, "DEVPATH=", 8)) {
+            uevent->action = msg;
+        }
+        else if (!strncmp(msg, "DEVPATH=", 8))
+        {
             msg += 8;
-            luther_gliethttp->path = msg;
-        } else if (!strncmp(msg, "SUBSYSTEM=", 10)) {
+            uevent->path = msg;
+        }
+        else if (!strncmp(msg, "SUBSYSTEM=", 10))
+        {
             msg += 10;
-            luther_gliethttp->subsystem = msg;
-        } else if (!strncmp(msg, "FIRMWARE=", 9)) {
+            uevent->subsystem = msg;
+        }
+        else if (!strncmp(msg, "FIRMWARE=", 9))
+        {
             msg += 9;
-            luther_gliethttp->firmware = msg;
-        } else if (!strncmp(msg, "MAJOR=", 6)) {
+            uevent->firmware = msg;
+        }
+        else if (!strncmp(msg, "MAJOR=", 6))
+        {
             msg += 6;
-            luther_gliethttp->major = atoi(msg);
-        } else if (!strncmp(msg, "MINOR=", 6)) {
+            uevent->major = atoi(msg);
+        }
+        else if (!strncmp(msg, "MINOR=", 6))
+        {
             msg += 6;
-            luther_gliethttp->minor = atoi(msg);
-        }else if (!strncmp(msg, "DEVNAME=", 8)) {
+            uevent->minor = atoi(msg);
+        }
+        else if (!strncmp(msg, "DEVNAME=", 8))
+        {
             msg += 8;
-            luther_gliethttp->devname = msg;
-        }else if (!strncmp(msg, "DEVTYPE=", 8)) {
+            uevent->devname = msg;
+        }
+        else if (!strncmp(msg, "DEVTYPE=", 8))
+        {
             msg += 8;
-            luther_gliethttp->devtype = msg;
+            uevent->devtype = msg;
         }
         while(*msg++)
             ;
     }
-	/*是否sd卡插入*/
+    /*是否sd卡插入*/
     printf("event { action = '%s', path = '%s', subsystem = '%s', firmware = '%s', major = %d, minor = %d , devname = '%s', devtype = '%s'}\n",
-                    luther_gliethttp->action, luther_gliethttp->path, luther_gliethttp->subsystem,
-                    luther_gliethttp->firmware, luther_gliethttp->major, luther_gliethttp->minor, luther_gliethttp->devname, luther_gliethttp->devtype);
-    if (!strncmp(luther_gliethttp->action, "add",3) && !strncmp(luther_gliethttp->subsystem, "block",5) && !strncmp(luther_gliethttp->devname, "mmcblk0p1",9) \
-	    && !strncmp(luther_gliethttp->devtype,"partition",9)){
+           uevent->action, uevent->path, uevent->subsystem,
+           uevent->firmware, uevent->major, uevent->minor, uevent->devname, uevent->devtype);
+    if (!strncmp(uevent->action, "add",3) && !strncmp(uevent->subsystem, "block",5) && !strncmp(uevent->devname, "mmcblk0p1",9) \
+        && !strncmp(uevent->devtype,"partition",9))
+    {
         sleep(2);
-        blkid_cache cache;  
-        blkid_get_cache(&cache, "/dev/null");  
-        puuid = blkid_get_tag_value(cache, "UUID", "/dev/block/mmcblk0p1");  
+        blkid_cache cache;
+        blkid_get_cache(&cache, "/dev/null");
+        puuid = blkid_get_tag_value(cache, "UUID", "/dev/block/mmcblk0p1");
         blkid_put_cache(cache);
         printf("The puuid by probing is %s\n", puuid==NULL?"<dont know>":puuid);
-		
-		strcat(path_sd,puuid);
-		printf("The path of sdcard is %s\n",path_sd);
-		copy_all_logs_to_storage(path_sd);
-		}
+
+        strcat(path_sd,puuid);
+        printf("The path of sdcard is %s\n",path_sd);
+        copy_all_logs_to_storage(path_sd);
     }
+}
 
