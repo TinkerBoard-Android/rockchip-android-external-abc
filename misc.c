@@ -350,6 +350,7 @@ static void create_system_directory(void)
  */
 void create_log_directory(const char* sd_path)
 {
+    umask(0);
     mkdir(sd_path, DIR_PERMIT);
 }
 

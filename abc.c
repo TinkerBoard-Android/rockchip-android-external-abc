@@ -159,7 +159,7 @@ static void *abc_android(void *arg)
     char logcat_cmd[128] = {0};
 
     //sprintf(logcat_cmd, "logcat -v time *:%s > %s/android", LOGCAT_PRIOR, new_log_path);
-    sprintf(logcat_cmd, "logcat > %s/android", new_log_path); //limit log size 80M
+    sprintf(logcat_cmd, "logcat -b all > %s/android", new_log_path); //limit log size 80M
     while (1)
     {
         if (system(logcat_cmd) < 0)
@@ -200,35 +200,58 @@ static void *abc_process(void *arg)
 static void *abc_kernel(void *arg)
 {
     printf("abc abc_kernel\n");
-    int num_read = 0;
-    char buffer[1024 * 10] = {0};
-    struct stat statbuff;
-    static int kmsg_fd = 0;
+    char logcat_cmd[128] = {0};
 
-    if((kmsg_fd = open(KMSG_PATH, O_RDONLY)) < 0)
-    {
-        printf("Open /proc/kmsg error!\nExit process...\n");
-        exit(EXIT_FAILURE);
-    }
-
+    //sprintf(logcat_cmd, "logcat -v time *:%s > %s/android", LOGCAT_PRIOR, new_log_path);
+    sprintf(logcat_cmd, "logcat -b kernel > %s/kernel", new_log_path);
     while (1)
     {
-        if (fstat(kernel_fd, &statbuff) == 0)
+        if (system(logcat_cmd) < 0)
         {
-            if (statbuff.st_size >= 1024*1024*60)
-            {
-                ftruncate(kernel_fd, 1024*1024*2);
-            }
+            printf("Logcat command error!\nExit process...\n");
+            exit(EXIT_FAILURE);
         }
-
-        num_read = read(kmsg_fd, buffer, sizeof(buffer));
-//      printf("abc going to write kernel log =%d", num_read);
-        write(kernel_fd, buffer, num_read);
-//      sleep(1);
+        sleep(1);
     }
     return NULL;
 }
 
+/*
+ * get kernel realtime message
+ */
+/*
+static void *abc_kernel(void *arg)
+{
+   printf("abc abc_kernel\n");
+   int num_read = 0;
+   char buffer[1024 * 10] = {0};
+   struct stat statbuff;
+   static int kmsg_fd = 0;
+
+   if((kmsg_fd = open(KMSG_PATH, O_RDONLY)) < 0)
+   {
+       printf("Open /proc/kmsg error!\nExit process...\n");
+       exit(EXIT_FAILURE);
+   }
+
+   while (1)
+   {
+       if (fstat(kernel_fd, &statbuff) == 0)
+       {
+           if (statbuff.st_size >= 1024*1024*60)
+           {
+               ftruncate(kernel_fd, 1024*1024*2);
+           }
+       }
+
+       num_read = read(kmsg_fd, buffer, sizeof(buffer));
+//      printf("abc going to write kernel log =%d", num_read);
+       write(kernel_fd, buffer, num_read);
+//      sleep(1);
+   }
+   return NULL;
+}
+*/
 static void *abc_monitor_uevent(void *arg)
 {
     printf("abc abc_monitor_uevent\n");
