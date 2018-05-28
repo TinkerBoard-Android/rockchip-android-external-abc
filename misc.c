@@ -374,22 +374,22 @@ void copy_all_logs_to_storage(const char* path)
 
         create_log_directory(path);
 
-        strcpy(shell_cmd,"cp -r /data/logs ");
+        strcpy(shell_cmd,"cp -rf /data/logs ");
         strcat(shell_cmd,path);
         printf("shell_cmd now %s\n", shell_cmd);
         system(shell_cmd);
 
-        strcpy(shell_cmd,"cp -r /sys/fs/pstore ");
+        strcpy(shell_cmd,"cp -rf /sys/fs/pstore ");
         strcat(shell_cmd,path);
         printf("shell_cmd now %s\n", shell_cmd);
         system(shell_cmd);
 
-        strcpy(shell_cmd,"cp -r /data/anr ");
+        strcpy(shell_cmd,"cp -rf /data/anr ");
         strcat(shell_cmd,path);
         printf("shell_cmd now %s\n", shell_cmd);
         system(shell_cmd);
 
-        strcpy(shell_cmd,"cp -r /data/tombstones ");
+        strcpy(shell_cmd,"cp -rf /data/tombstones ");
         strcat(shell_cmd,path);
         printf("shell_cmd now %s\n", shell_cmd);
         system(shell_cmd);
@@ -403,8 +403,14 @@ void copy_all_logs_to_storage(const char* path)
         strcpy(shell_cmd,"touch ");
         strcat(shell_cmd,path);
         strcat(shell_cmd,"COPY-COMPLETE");
+        printf("shell_cmd now is %s\n", shell_cmd);
         system(shell_cmd);
         printf("COPY-COMPLETE\n");
+
+        strcpy(shell_cmd,"chmod -R 777 ");
+        strcat(shell_cmd,path);
+        printf("shell_cmd now is %s\n", shell_cmd);
+        system(shell_cmd);
 
     }
 }

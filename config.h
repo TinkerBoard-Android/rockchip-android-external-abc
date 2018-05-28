@@ -52,8 +52,11 @@
 #define CONFIG_LOGCAT_LOG
 //#define CONFIG_PROCESS_LOG
 //#define CONFIG_SEND_MAIL
+
+#ifdef TARGET_BOARD_PLATFORM_RK3399
 #define CONFIG_COPY_LOG_TO_FLASH
 #define CONFIG_MONITOR_UEVENT
+#endif
 
 /* config all files numbers in SYSTEM_PATH
  * usually keep default configure---100
