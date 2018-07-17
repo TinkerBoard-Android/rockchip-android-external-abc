@@ -394,6 +394,11 @@ void copy_all_logs_to_storage(const char* path)
         printf("shell_cmd now %s\n", shell_cmd);
         system(shell_cmd);
 
+        strcpy(shell_cmd,"cp -rf /cache/recovery ");
+        strcat(shell_cmd,path);
+        printf("shell_cmd now %s\n", shell_cmd);
+        system(shell_cmd);
+
         strcpy(shell_cmd,"bugreport > ");
         strcat(shell_cmd,path);
         strcat(shell_cmd,"bugreport.log");
