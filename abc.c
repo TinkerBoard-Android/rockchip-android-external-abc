@@ -159,7 +159,7 @@ static void *abc_android(void *arg)
     char logcat_cmd[128] = {0};
 
     //sprintf(logcat_cmd, "logcat -v time *:%s > %s/android", LOGCAT_PRIOR, new_log_path);
-    sprintf(logcat_cmd, "logcat -b all > %s/android", new_log_path); //limit log size 80M
+    sprintf(logcat_cmd, "logcat -b all -f %s/android -n 1 -r 2097152", new_log_path); //limit log size 200M
     while (1)
     {
         if (system(logcat_cmd) < 0)
