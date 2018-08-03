@@ -10,8 +10,13 @@ LOCAL_SRC_FILES := \
 
 LOCAL_MODULE := abc
 LOCAL_MODULE_TAGS := eng
-LOCAL_SHARED_LIBRARIES := liblog libselinux libext2_blkid
-LOCAL_CFLAGS += -Wno-error
+LOCAL_PROPRIETARY_MODULE := true
+LOCAL_STATIC_LIBRARIES := libcutils 
+LOCAL_SHARED_LIBRARIES := liblog libselinux
+ # libext2_blkid
+LOCAL_CFLAGS += -Wno-error \
+    -Wunused-variable \
+    -Wmacro-redefined
 
 ifeq ($(strip $(TARGET_BOARD_PLATFORM)), rk3399)
 LOCAL_CFLAGS += -DTARGET_BOARD_PLATFORM_RK3399

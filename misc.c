@@ -474,7 +474,7 @@ static void filter_bug_info(void)
     /* filter keywords from latest log */
     while (strcmp(key_words[i++], " "))
     {
-        sprintf(grep_command, "busybox grep -n \"%s\" kernel android",
+        sprintf(grep_command, "/system/bin/busybox grep -n \"%s\" kernel android",
                 key_words[i]);
         /* call busybox grep command */
         debug = system(grep_command);

@@ -159,7 +159,7 @@ static void *abc_android(void *arg)
     char logcat_cmd[128] = {0};
 
     //sprintf(logcat_cmd, "logcat -v time *:%s > %s/android", LOGCAT_PRIOR, new_log_path);
-    sprintf(logcat_cmd, "logcat -b all -f %s/android -n 1 -r 2097152", new_log_path); //limit log size 200M
+    sprintf(logcat_cmd, "/system/bin/logcat -b all -f %s/android -n 1 -r 2097152", new_log_path); //limit log size 200M
     while (1)
     {
         if (system(logcat_cmd) < 0)
@@ -203,7 +203,7 @@ static void *abc_kernel(void *arg)
     char logcat_cmd[128] = {0};
 
     //sprintf(logcat_cmd, "logcat -v time *:%s > %s/android", LOGCAT_PRIOR, new_log_path);
-    sprintf(logcat_cmd, "logcat -b kernel > %s/kernel", new_log_path);
+    sprintf(logcat_cmd, "/system/bin/logcat -b kernel > %s/kernel", new_log_path);
     while (1)
     {
         if (system(logcat_cmd) < 0)
