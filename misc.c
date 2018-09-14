@@ -374,7 +374,7 @@ void copy_all_logs_to_storage(const char* path)
 
         create_log_directory(path);
 
-        strcpy(shell_cmd,"cp -rf /data/logs ");
+        strcpy(shell_cmd,"cp -rf /data/vendor/logs ");
         strcat(shell_cmd,path);
         printf("shell_cmd now %s\n", shell_cmd);
         system(shell_cmd);

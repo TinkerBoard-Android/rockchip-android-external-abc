@@ -16,7 +16,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#define SYSTEM_PATH "/data/logs"
+#define SYSTEM_PATH "/data/vendor/logs"
 
 #define LOG_SD_PATH "/storage/"
 #define LOG_FLASH_PATH  "/data/media/0";
