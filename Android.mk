@@ -18,7 +18,4 @@ LOCAL_CFLAGS += -Wno-error \
     -Wunused-variable \
     -Wmacro-redefined
 
-ifeq ($(strip $(TARGET_BOARD_PLATFORM)), rk3399)
-LOCAL_CFLAGS += -DTARGET_BOARD_PLATFORM_RK3399
-endif
 include $(BUILD_EXECUTABLE)
