@@ -9,7 +9,6 @@ LOCAL_SRC_FILES := \
 	hotplug.c
 
 LOCAL_MODULE := abc
-LOCAL_MODULE_TAGS := eng
 LOCAL_PROPRIETARY_MODULE := true
 LOCAL_STATIC_LIBRARIES := libcutils 
 LOCAL_SHARED_LIBRARIES := liblog libselinux
